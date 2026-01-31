@@ -1,93 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KidSearch-AI</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KidSearch-AI</title>
+<script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-950 text-white min-h-screen">
-  <div class="max-w-6xl mx-auto p-6">
-    <h1 class="text-4xl font-bold mb-4">KidSearch‑AI</h1>
-    <p class="text-gray-400 mb-6">A kid‑safe AI assistant. Chat, get an API key, and view example code.</p>
+<div class="max-w-5xl mx-auto p-6">
+<h1 class="text-4xl font-bold mb-2">KidSearch-AI 🤖</h1>
+<p class="text-gray-400 mb-6">A kid-safe AI assistant. Chat or use the API.</p>
 
-    <!-- Chat Section -->
-    <div class="bg-gray-900 p-4 rounded-xl mb-6">
-      <h2 class="text-xl font-semibold mb-2">Chat with KidSearch‑AI</h2>
-      <div id="chatBox" class="h-64 overflow-y-auto bg-black p-3 rounded mb-3 text-sm"></div>
-      <div class="flex gap-2">
-        <input id="userInput" placeholder="Ask KidSearch‑AI..." class="flex-1 bg-gray-800 p-2 rounded outline-none" />
-        <button onclick="sendMessage()" class="bg-blue-600 px-4 rounded">Send</button>
-      </div>
-    </div>
+<div class="bg-gray-900 p-4 rounded-xl mb-6">
+<h2 class="text-xl font-semibold mb-2">Chat with KidSearch-AI</h2>
+<div id="chatBox" class="h-64 overflow-y-auto bg-black p-3 rounded mb-3 text-sm"></div>
+<div class="flex gap-2">
+<input id="userInput" class="flex-1 bg-gray-800 p-2 rounded outline-none" placeholder="Ask KidSearch-AI..." />
+<button onclick="sendMessage()" class="bg-blue-600 px-4 rounded">Send</button>
+</div>
+</div>
 
-    <!-- API Key Section -->
-    <div class="bg-gray-900 p-4 rounded-xl mb-6">
-      <h2 class="text-xl font-semibold mb-2">Get API Key</h2>
-      <button onclick="generateKey()" class="bg-green-600 px-4 py-2 rounded">Generate Key</button>
-      <pre id="apiKey" class="mt-3 text-green-400"></pre>
-    </div>
+<div class="bg-gray-900 p-4 rounded-xl mb-6">
+<h2 class="text-xl font-semibold mb-2">Generate API Key</h2>
+<button onclick="generateKey()" class="bg-green-600 px-4 py-2 rounded">Generate</button>
+<pre id="apiKey" class="mt-3 text-green-400"></pre>
+</div>
 
-    <!-- Code Download Section -->
-    <div class="bg-gray-900 p-4 rounded-xl">
-      <h2 class="text-xl font-semibold mb-2">Developer Code Examples</h2>
-      <button onclick="showCode()" class="bg-purple-600 px-4 py-2 rounded">Show Example Code</button>
-      <pre id="codeBlock" class="mt-3 text-gray-300 text-sm"></pre>
-    </div>
-  </div>
+<div class="bg-gray-900 p-4 rounded-xl">
+<h2 class="text-xl font-semibold mb-2">Developer Example</h2>
+<button onclick="showCode()" class="bg-purple-600 px-4 py-2 rounded">Show Code</button>
+<pre id="codeBlock" class="mt-3 text-gray-300 text-sm"></pre>
+</div>
+</div>
 
 <script>
-const chatBox = document.getElementById('chatBox');
+const chatBox = document.getElementById("chatBox");
 
 function addMessage(role, text) {
-  const msg = document.createElement('div');
-  msg.className = role === 'user' ? 'text-blue-400 mb-2' : 'text-green-400 mb-2';
-  msg.textContent = (role === 'user' ? 'You: ' : 'KidSearch‑AI: ') + text;
-  chatBox.appendChild(msg);
+  const div = document.createElement("div");
+  div.className = role === "user" ? "text-blue-400 mb-2" : "text-green-400 mb-2";
+  div.textContent = (role === "user" ? "You: " : "KidSearch-AI: ") + text;
+  chatBox.appendChild(div);
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-async function kidSearchReply(input) {
-  // Real AI API call (replace YOUR_BACKEND_URL)
-  try {
-    const res = await fetch('https://YOUR_BACKEND_URL/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: input })
-    });
-    const data = await res.json();
-    return data.reply || "Sorry, I couldn't answer that.";
-  } catch (e) {
-    return "Server offline — demo reply mode active.";
-  }
-}(input) {
-  const safeReplies = [
-    "That's a great question!",
-    "I can help with that!",
-    "Let's learn something fun!",
-    "Try asking it in a different way!"
-  ];
-  return safeReplies[Math.floor(Math.random() * safeReplies.length)] + " (Demo Mode)";
-}
-
-function sendMessage() {
-  const input = document.getElementById('userInput');
+async function sendMessage() {
+  const input = document.getElementById("userInput");
   if (!input.value.trim()) return;
-  addMessage('user', input.value);
-  kidSearchReply(input.value).then(reply => {
-    setTimeout(() => addMessage('ai', reply), 300);
-  });(input.value);
-  setTimeout(() => addMessage('ai', reply), 400);
-  input.value = '';
+
+  addMessage("user", input.value);
+
+  try {
+    const res = await fetch("https://YOUR_BACKEND_URL/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: input.value })
+    });
+
+    const data = await res.json();
+    addMessage("ai", data.reply || "No reply");
+  } catch {
+    addMessage("ai", "Server offline — try later.");
+  }
+
+  input.value = "";
 }
 
 function generateKey() {
-  const key = 'kidsearch-' + Math.random().toString(36).substring(2, 14);
-  document.getElementById('apiKey').textContent = key;
+  const key = "kidsearch-" + Math.random().toString(36).slice(2);
+  document.getElementById("apiKey").textContent = key;
 }
 
 function showCode() {
-  document.getElementById('codeBlock').textContent = `// Example KidSearch‑AI API Call\nfetch('https://api.kidsearch.ai/chat', {\n  method: 'POST',\n  headers: {\n    'Authorization': 'YOUR_API_KEY',\n    'Content-Type': 'application/json'\n  },\n  body: JSON.stringify({ message: 'Hello KidSearch‑AI!' })\n});`;
+  document.getElementById("codeBlock").textContent =
+`fetch("https://api.kidsearch.ai/chat", {
+ headers: { Authorization: "YOUR_API_KEY" },
+ body: JSON.stringify({ message: "Hello KidSearch-AI!" })
+})`;
 }
 </script>
 </body>
